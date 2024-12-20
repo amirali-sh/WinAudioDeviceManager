@@ -172,6 +172,7 @@
             Name = "MainForm";
             ShowInTaskbar = false;
             Text = "Audio Device Selector";
+            Shown += MainForm_Shown;
             Resize += MainForm_Resize;
             gb_devices.ResumeLayout(false);
             gb_devices.PerformLayout();

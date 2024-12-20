@@ -2,7 +2,6 @@ F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDe
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDevice.deps.json
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDevice.runtimeconfig.json
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDevice.dll
-F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDevice.pdb
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\CoreAudio.dll
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\Microsoft.Windows.SDK.NET.dll
 F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\WinRT.Runtime.dll
@@ -16,6 +15,7 @@ F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDe
 F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDevice.csproj.CopyComplete
 F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDevice.dll
 F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\refint\AudioDevice.dll
-F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDevice.pdb
 F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDevice.genruntimeconfig.cache
 F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\ref\AudioDevice.dll
+F:\Programs\AudioDevice\AudioDevice\bin\Debug\net6.0-windows10.0.19041.0\AudioDevice.pdb
+F:\Programs\AudioDevice\AudioDevice\obj\Debug\net6.0-windows10.0.19041.0\AudioDevice.pdb

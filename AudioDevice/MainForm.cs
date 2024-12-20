@@ -42,7 +42,8 @@ namespace AudioDevice
         private UserSettings _userSettings;
         private const string _settingsFileName = "AudioDevicesSetting.xml";
 
-        // Constructors
+        // Constructors -------------------------------------------------------------
+
         public MainForm()
         {
             InitializeComponent();
@@ -50,7 +51,7 @@ namespace AudioDevice
             // audio devices
             _audioDeviceUtility = new AudioDeviceUtility();
             _audioDeviceUtility.AudioDevicesChanged += _audioDeviceUtility_AudioDevicesChanged;
-            lb_AudioDevices.DataSourceChanged += Lb_AudioDevices_DataSourceChanged;
+            lb_AudioDevices.DataSourceChanged += lb_AudioDevices_DataSourceChanged;
             lb_AudioDevices.DataSource = _audioDeviceUtility.AudioDeviceNames;
             lb_AudioDevices.Click += Lb_AudioDevices_Click;
 
@@ -73,6 +74,7 @@ namespace AudioDevice
         }
 
         // Utility Functions ----------------------------------------------------------------
+
         private void _UpdateAudioDevicesInterface()
         {
             lb_AudioDevices.Enabled = false;
@@ -135,13 +137,43 @@ namespace AudioDevice
             }
         }
 
-        // Event Handlers ----------------------------------------------------------------
-
-        private void Lb_AudioDevices_DataSourceChanged(object? sender, EventArgs e)
+        // Update the selected and checked index of the listbox containing audio devices
+        // this method assumes that the list is valid.
+        private void _updateAudioDeviceListInterface()
         {
-            lb_AudioDevices.Enabled = true;
+            int index = _audioDeviceUtility.GetActiveDeviceIndex();
+            lb_AudioDevices.SelectedIndex = index;
+            for (int i = 0; i < lb_AudioDevices.Items.Count; ++i)
+            {
+                if (lb_AudioDevices.SelectedIndex == i)
+                {
+                    lb_AudioDevices.SetItemChecked(i, true);
+                }
+                else
+                {
+                    lb_AudioDevices.SetItemChecked(i, false);
+                }
+            }
         }
 
+        // Event Handlers ----------------------------------------------------------------
+
+        // We disable the listbox of audio devices on hardware change. Enable after
+        // hardware change is done.
+        private void lb_AudioDevices_DataSourceChanged(object? sender, EventArgs e)
+        {
+            // only update the interface if there is a data source
+            // we set the data source to null sometimes to force a 
+            // refresh and in those cases we don't want audio devices
+            // to get updated.
+            if (lb_AudioDevices.DataBindings.Count > 0)
+            {
+                lb_AudioDevices.Enabled = true;
+                _updateAudioDeviceListInterface();
+            }
+        }
+
+        // Handle changing of the audio device
         private void _audioDeviceUtility_AudioDevicesChanged(object? sender, EventArgs e)
         {
             if (lb_AudioDevices.InvokeRequired)
@@ -154,12 +186,7 @@ namespace AudioDevice
             }
         }
 
-        private void btn_switchToDevice_Click(object sender, EventArgs e)
-        {
-            while (!lb_AudioDevices.Enabled) { }
-            _audioDeviceUtility.SwitchToDevice(lb_AudioDevices.SelectedIndex);
-        }
-
+        // Handle going into shortcut key recording mode and saving the shortcut key
         private void btn_UpdateDeviceSwitchShortcut_Click(object sender, EventArgs e)
         {
             switch (_shortcutButtonState)
@@ -177,7 +204,7 @@ namespace AudioDevice
                     _shortcutButtonKeys = _temp_shortcutButtonKeys;
                     _shortcutModifierKeys = _temp_shortcutModifierKeys;
                     _UpdateShortcutKeyRegistration();
-                    
+
                     // Settings
                     _userSettings.ModifierKeys = _shortcutModifierKeys;
                     _userSettings.ShortcutKeys = _shortcutButtonKeys;
@@ -188,6 +215,7 @@ namespace AudioDevice
             btn_UpdateDeviceSwitchShortcut.Text = _shortcutButtonLabels[(int)_shortcutButtonState];
         }
 
+        // Handle recording of the shortcut key
         private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
             if (_shortcutButtonState == ShortcutButtonState.Recording)
@@ -198,6 +226,7 @@ namespace AudioDevice
             }
         }
 
+        // Abort modification of the shortcut key
         private void btn_CancelKeyModification_Click(object sender, EventArgs e)
         {
             _UpdateInternalEnableState(true);
@@ -206,18 +235,21 @@ namespace AudioDevice
             btn_UpdateDeviceSwitchShortcut.Text = _shortcutButtonLabels[(int)_shortcutButtonState];
         }
 
+        // Reset the setting for the shortcut key and remove it from windows hot key registry
         private void btn_ClearShortcut_Click(object sender, EventArgs e)
         {
             _ResetShortcutKeys(true);
             _UpdateModifierKeyText(_shortcutButtonKeys, _shortcutModifierKeys);
         }
 
+        // Shutdown the program, remove the shortcut key.
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
             _ResetShortcutKeys(false);
             _UpdateModifierKeyText(_shortcutButtonKeys, _shortcutModifierKeys);
         }
 
+        // Switch devices when the user click on a different device
         private void Lb_AudioDevices_Click(object? sender, EventArgs e)
         {
             while (!lb_AudioDevices.Enabled) { } // wait for audiodevices to finish updating.
@@ -225,28 +257,19 @@ namespace AudioDevice
             _audioDeviceUtility.SwitchToDevice(lb_AudioDevices.SelectedIndex);
 
             // update check boxes.
-            for (int i = 0; i < lb_AudioDevices.Items.Count; ++i)
-            {
-                if (lb_AudioDevices.SelectedIndex == i)
-                {
-                    lb_AudioDevices.SetItemChecked(i, true);
-                }
-                else
-                {
-                    lb_AudioDevices.SetItemChecked(i, false);
-                }
-            }
+            _updateAudioDeviceListInterface();
         }
 
+        // Prvevent unchecking of the selected device by clicking on the same item
         private void lb_AudioDevices_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            // prvevent unchecking of the selected device by clicking on the same item
+        {            
             if (e.NewValue == CheckState.Unchecked && e.Index == lb_AudioDevices.SelectedIndex)
             {
                 e.NewValue = e.CurrentValue;
             }
         }
 
+        // Show the window when the tray icon is double clicked
         private void ni_notifyIconTray_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.Show();
@@ -267,6 +290,7 @@ namespace AudioDevice
             base.WndProc(ref m);
         }
 
+        // Minimize to tray
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
@@ -274,6 +298,12 @@ namespace AudioDevice
                 this.Hide();
                 ni_notifyIconTray.Visible = true;
             }
+        }
+
+        // Make sure the device list is uptodate and the proper device is selected
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            _updateAudioDeviceListInterface();
         }
     }
 }
